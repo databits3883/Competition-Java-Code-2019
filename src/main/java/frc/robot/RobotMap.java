@@ -24,6 +24,8 @@ public class RobotMap {
   public static final int elevatorChannel = 0;
   public static final int neckChannel = 1;
   public static final int intakeChannel = 2;
+  public static final int elevatorEncoderChannelA = 0;
+  public static final int elevatorEncoderChannelB = 0;
 
   //DIO
   public static final int elevatorTopChannel = 0;
@@ -32,8 +34,11 @@ public class RobotMap {
   //pnumatics
   public static final int jawChannel = 0;
   public static final int wristChannel = 1;
-  public static final int breakChannel = 2;
+  public static final int brakeChannel = 2;
 
+
+  //physical
+  public static final float elevatorDistancePerPulse = 1;
 
   // For example to map the left and right motors, you could define the
   // following variables to use with your drivetrain subsystem.
