@@ -39,6 +39,7 @@ public class RobotMap {
 
   //physical
   public static final float elevatorDistancePerPulse = 1;
+  public static final float elevatorTop = 0;
 
   // For example to map the left and right motors, you could define the
   // following variables to use with your drivetrain subsystem.

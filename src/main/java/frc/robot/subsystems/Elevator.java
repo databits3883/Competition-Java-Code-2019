@@ -25,6 +25,10 @@ public class Elevator extends PIDSubsystem {
 
   DigitalInput topLimit = new DigitalInput(RobotMap.elevatorTopChannel);
   DigitalInput bottomLimit = new DigitalInput(RobotMap.elevatorBottomChannel);
+  
+  //distance between current encoder value and real position
+  float encoderOffset = 0;
+  
   /**
    * Add your docs here.
    */
@@ -49,7 +53,7 @@ public class Elevator extends PIDSubsystem {
     // Return your input value for the PID loop
     // e.g. a sensor, like a potentiometer:
     // yourPot.getAverageVoltage() / kYourMaxVoltage;
-    return encoder.getDistance();
+    return encoder.getDistance() - encoderOffset;
   }
 
   @Override
@@ -63,8 +67,17 @@ public class Elevator extends PIDSubsystem {
    * Ensures the output does not push past the limit switches
    */
   double limitCutoff(double output){
-    if (bottomLimit.get()) output = Math.max(0, output);
-    if (topLimit.get()) output = Math.min(0, output);
+    if (bottomLimit.get()){
+      output = Math.max(0, output);
+      encoder.reset();
+      encoderOffset = 0;
+      getPIDController().reset();
+    }
+    if (topLimit.get()){
+      output = Math.min(0, output);
+      encoderOffset = encoder.get() - RobotMap.elevatorTop;
+      getPIDController().reset();
+    }
     return output;
   }
 
