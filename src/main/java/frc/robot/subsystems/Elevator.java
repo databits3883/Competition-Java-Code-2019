@@ -28,6 +28,8 @@ public class Elevator extends PIDSubsystem {
   
   //distance between current encoder value and real position
   float encoderOffset = 0;
+  //tolerance of the sysem, range around setpoint where motor is disabled and break is engaged
+  float tolerance = 0;
   
   /**
    * Add your docs here.
@@ -41,6 +43,7 @@ public class Elevator extends PIDSubsystem {
     // to
     // enable() - Enables the PID controller.
   }
+
 
   @Override
   public void initDefaultCommand() {
@@ -60,25 +63,38 @@ public class Elevator extends PIDSubsystem {
   protected void usePIDOutput(double output) {
     // Use output to drive your system, like a motor
     // e.g. yourMotor.set(output);
-    output = limitCutoff(output);
-    motor.set(output);
+    if (onTarget()){
+      brake();
+    }else{
+      moveAtSpeed(output);
+    }
   }
+  void brake(){
+    motor.set(0);
+    brake.set(false);
+  }
+  void moveAtSpeed(double speed){
+    brake.set(true);
+      speed = limitCutoff(speed);
+      motor.set(speed);
+  }
+
   /**
-   * Ensures the output does not push past the limit switches
+   * Ensures the motor does not push past the limit switches
    */
-  double limitCutoff(double output){
+  double limitCutoff(double speed){
     if (bottomLimit.get()){
-      output = Math.max(0, output);
+      speed = Math.max(0, speed);
       encoder.reset();
       encoderOffset = 0;
       getPIDController().reset();
     }
     if (topLimit.get()){
-      output = Math.min(0, output);
+      speed = Math.min(0, speed);
       encoderOffset = encoder.get() - RobotMap.elevatorTop;
       getPIDController().reset();
     }
-    return output;
+    return speed;
   }
 
 }
